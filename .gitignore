@@ -136,3 +136,11 @@ dmypy.json
 *.iml
 out
 gen
+
+# GloVe files
+data/glove/*
+!data/glove/.gitkeep
+
+# model
+weights/*
+!weights/.gitkeep
