@@ -8,7 +8,7 @@ dependencies:
   - certifi=2021.10.8
   - click=8.0.4
   - colorama=0.4.4
-  - keras=2.9.0
+  - keras=2.4.3
   - nltk=3.7
   - numpy=1.22.3
   - numpy-base=1.22.3
