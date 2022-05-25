@@ -1,6 +1,5 @@
-from abc import ABC, abstractmethod
-
 import nltk
+from abc import ABC, abstractmethod
 
 
 class AbstractTagger(ABC):

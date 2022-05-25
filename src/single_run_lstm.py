@@ -1,14 +1,13 @@
-import logging
 import os
-import pathlib
-
 import torch
+import logging
+import pathlib
 import torch.nn as nn
 
-from src.data_loading import load_data
 from src.test import test
 from src.train import train
-from src.utils import Selector, get_model, get_embedding_vectors, prepare_data_loaders_and_tokenizer, \
+from src.data_loading import load_data
+from src.utils import Selector, get_model, get_embedding_vectors, prepare_dataloaders, \
     add_parameters_to_test_results
 
 
@@ -20,14 +19,14 @@ def single_run_lstm(params, embeddings):
         f"Using parameters: sequence_length={params['sequence_length']} embedding_size={params['embedding_size']} "
         f"epochs={params['epochs']} learning_rate={params['learning_rate']} padding={params['padding']}")
     X, y = load_data(data_root, params['dataset'])
-    train_loader, val_loader, test_loader, tokenizer, output_size = prepare_data_loaders_and_tokenizer(X, y, params)
+    train_loader, val_loader, test_loader, tokenizer, output_size = prepare_dataloaders(X, y, params)
     embedding_matrix = get_embedding_vectors(tokenizer, params['embedding_size'], embeddings)
     vocab_size = len(tokenizer.word_index) + 1
 
     run_results = []
     for model_idx in range(len(Selector)):
         model_name = Selector(model_idx).name
-        logging.info(f"name of the model: {model_name}")
+        logging.info(f"Model name: {model_name}")
 
         model = get_model(Selector(model_idx), vocab_size, output_size, embedding_matrix, params['embedding_size'],
                           params['hidden_dim'], device, params['drop_prob'], tokenizer, params['sequence_length'])

@@ -1,19 +1,18 @@
 import json
+import torch
 import logging
-from datetime import datetime
-from enum import Enum
-from typing import List, Dict
-
 import numpy as np
 import pandas as pd
-import torch
-from keras.preprocessing.sequence import pad_sequences
+from enum import Enum
+from datetime import datetime
+from typing import List, Dict
 from keras.preprocessing.text import Tokenizer
 from sklearn.model_selection import train_test_split
+from keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import TensorDataset, DataLoader, Dataset
 
-from src.data_loading import load_glove_embedding_vec
 from src.encoder import Encoder
+from src.data_loading import load_glove
 from src.model.model import SpamClassifierLstmLayer, SpamClassifierSingleLstmCell, SpamClassifierLstmPosUniversal, \
     SpamClassifierLstmPosPenn
 
@@ -90,15 +89,14 @@ def get_embedding_vectors(input_tokenizer, dim, embeddings):
 
 def get_embeddings():
     return {
-        50: load_glove_embedding_vec("data/", 50),
-        100: load_glove_embedding_vec("data/", 100),
-        300: load_glove_embedding_vec("data/", 300)
+        50: load_glove("data/", 50),
+        100: load_glove("data/", 100),
+        300: load_glove("data/", 300)
     }
 
 
 def text_preprocessing(params, X, y):
-    encoder = Encoder()
-    y_one_hot = encoder.fit_transform(y)
+    y_one_hot = Encoder().fit_transform(y)
     output_size = len(y_one_hot[0])
 
     if params['mode'] == 'debug':
@@ -117,8 +115,7 @@ def text_preprocessing(params, X, y):
 
 
 def roberta_text_preprocessing(params, X, y):
-    encoder = Encoder()
-    y_one_hot = encoder.fit_transform(y)
+    y_one_hot = Encoder().fit_transform(y)
     output_size = len(y_one_hot[0])
 
     if params['mode'] == 'debug':
@@ -126,33 +123,33 @@ def roberta_text_preprocessing(params, X, y):
 
     # 512 is maximum possible length for Roberta
     if params['sequence_length'] > 512:
-        raise ValueError("Sequence length for Roberta must not be bigger than 512")
+        raise ValueError("Sequence length for Roberta must not be larger than 512")
 
     X = [row[:params['sequence_length']] for row in X]
     y_one_hot = np.asarray(y_one_hot, dtype=np.float32)
     return X, y_one_hot, output_size
 
 
-def prepare_data_loaders_and_tokenizer(X, y, params, for_roberta=False):
-    if not for_roberta:
-        X, y_one_hot, tokenizer, output_size = text_preprocessing(params, X, y)
-    else:
+def prepare_dataloaders(X, y, params, for_roberta=False):
+    if for_roberta:
         X, y_one_hot, output_size = roberta_text_preprocessing(params, X, y)
         tokenizer = None
+    else:
+        X, y_one_hot, tokenizer, output_size = text_preprocessing(params, X, y)
 
     x_train, x_test, y_train, y_test = train_test_split(X, y_one_hot, train_size=params['train_ratio'], random_state=7)
 
     split_idx = int(params['val_ratio'] / (params['val_ratio'] + params['test_ratio']) * len(x_test))
     x_val, x_test, y_val, y_test = x_test[:split_idx], x_test[split_idx:], y_test[:split_idx], y_test[split_idx:]
 
-    if not for_roberta:
-        train_data = TensorDataset(torch.from_numpy(x_train), torch.from_numpy(y_train))
-        val_data = TensorDataset(torch.from_numpy(x_val), torch.from_numpy(y_val))
-        test_data = TensorDataset(torch.from_numpy(x_test), torch.from_numpy(y_test))
-    else:
+    if for_roberta:
         train_data = CustomRobertaDataset(x_train, y_train)
         val_data = CustomRobertaDataset(x_val, y_val)
         test_data = CustomRobertaDataset(x_test, y_test)
+    else:
+        train_data = TensorDataset(torch.from_numpy(x_train), torch.from_numpy(y_train))
+        val_data = TensorDataset(torch.from_numpy(x_val), torch.from_numpy(y_val))
+        test_data = TensorDataset(torch.from_numpy(x_test), torch.from_numpy(y_test))
 
     train_loader = DataLoader(train_data, shuffle=True, batch_size=params['batch_size'])
     val_loader = DataLoader(val_data, shuffle=True, batch_size=params['batch_size'])

@@ -1,6 +1,5 @@
-import logging
 import pickle
-
+import logging
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 

@@ -1,9 +1,8 @@
-import csv
 import os
-
+import csv
 import nltk
-import numpy as np
 import tqdm
+import numpy as np
 
 
 def load_data(data_root, dataset):
@@ -56,7 +55,7 @@ def load_bbc_news(data_root):
     return texts, labels
 
 
-def load_glove_embedding_vec(data_root, dim):
+def load_glove(data_root, dim):
     embedding_index = dict()
     with open(os.path.join(data_root, f"glove/glove.6B.{dim}d.txt")) as f:
         for line in tqdm.tqdm(f, "Reading GloVe"):
@@ -66,5 +65,5 @@ def load_glove_embedding_vec(data_root, dim):
     return embedding_index
 
 
-def download_necessary_nltk_packages():
+def download_nltk_packages():
     nltk.download(['averaged_perceptron_tagger', 'universal_tagset', 'tagsets'])

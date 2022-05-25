@@ -1,8 +1,7 @@
 import torch.nn as nn
 
-from src.model.abstract_model import AbstractSpamClassifier, \
-    AbstractSpamClassifierWithTaggerIndexMapperAndDynamicGraph
 from src.tagger import FullTagger, UniversalTagger
+from src.model.abstract_model import AbstractSpamClassifier, AbstractSpamClassifierWithTaggerIndexMapperAndDynamicGraph
 
 
 class SpamClassifierSingleLstmCell(AbstractSpamClassifier):

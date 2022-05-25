@@ -1,7 +1,6 @@
-from abc import ABC, abstractmethod
-
 import torch
 from torch import nn as nn
+from abc import ABC, abstractmethod
 
 
 class AbstractSpamClassifier(nn.Module, ABC):
