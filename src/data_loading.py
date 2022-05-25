@@ -14,6 +14,10 @@ def load_data(data_root, dataset):
         return load_sentiment(data_root, dataset)
     elif dataset == 'BBC_news':
         return load_bbc_news(data_root)
+    elif dataset == 'Emotions':
+        return load_emotions_ds(data_root)
+    elif dataset == 'IMDB_reviews':
+        return load_imdb(data_root)
 
 
 def load_sms_ds(data_root):
@@ -52,6 +56,26 @@ def load_bbc_news(data_root):
     with open(os.path.join(data_root, 'bbc', 'bbc-text.csv')) as csv_file:
         for row in csv.DictReader(csv_file, delimiter=','):
             texts.append(row['text']), labels.append(row['category'])
+    return texts, labels
+
+
+def load_emotions_ds(data_root):
+    texts, labels = [], []
+    files = ['train.csv', 'val.csv', 'test.csv']
+    dirname = 'emotions'
+    for filename in files:
+        with open(os.path.join(data_root, dirname, filename)) as f:
+            for line in f:
+                split_line = line.split(';')
+                texts.append(split_line[0].strip()), labels.append(split_line[1].strip())
+    return texts, labels
+
+
+def load_imdb(data_root):
+    texts, labels = [], []
+    with open(os.path.join(data_root, 'imdb', 'imdb.csv')) as csv_file:
+        for row in csv.DictReader(csv_file, delimiter=','):
+            texts.append(row['review'].replace('<br />', '\n')), labels.append(row['sentiment'])
     return texts, labels
 
 
