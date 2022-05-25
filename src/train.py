@@ -7,17 +7,18 @@ from tqdm import tqdm
 from src.utils import exec_batch_roberta_model, exec_batch_lstm_models
 
 
-def save_model(model):
+def save_model(model, filename='weights/model.pickle'):
     if repr(model) == "Roberta":
-        model.save_weights()
+        model.save_weights(filename)
     else:
-        with open('weights/model.pickle', 'wb') as f:
+        with open(filename, 'wb') as f:
             pickle.dump(model, f)
 
 
 def train(model, epochs, train_loader, val_loader, device, optimizer, criterion, clip=None):
     model.to(device)
     epoch_min_loss, min_loss_val_ds, loaders = None, np.inf, {'train': train_loader, 'val': val_loader}
+    best = None
     for epoch in tqdm(range(1, epochs + 1)):
         for phase in ['train', 'val']:
             model.train() if phase == 'train' else model.eval()
@@ -39,8 +40,8 @@ def train(model, epochs, train_loader, val_loader, device, optimizer, criterion,
             avg_loss_phase = np.mean(losses)
             if phase == 'val' and avg_loss_phase < min_loss_val_ds:
                 min_loss_val_ds, epoch_min_loss = avg_loss_phase, epoch
-                save_model(model)
+                best = model
 
-            logging.info(f"epoch = {epoch}, loss for phase {phase} = {round(avg_loss_phase, 2)}")
+            logging.info(f"epoch = {epoch}, loss for phase {phase} = {round(float(avg_loss_phase), 2)}")
 
-    return {'epoch_min_loss': epoch_min_loss}
+    return best, {'epoch_min_loss': epoch_min_loss}

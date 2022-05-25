@@ -8,7 +8,7 @@ from torch import nn
 from src.data_loading import load_data
 from src.model.roberta import RobertaClassifier
 from src.test import test
-from src.train import train
+from src.train import train, save_model
 from src.utils import prepare_dataloaders, add_parameters_to_test_results
 
 
@@ -25,7 +25,9 @@ def single_run_roberta(params):
 
     model = RobertaClassifier(output_size, params['hidden_dim'])
     criterion, optimizer = nn.CrossEntropyLoss(), torch.optim.Adam(model.parameters(), lr=params['learning_rate'])
-    train_stats = train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
+    model, train_stats = train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
+    save_model(model,
+               f'weights/Roberta_{params["dataset"]}_seq:{params["sequence_length"]}_lr:{params["learning_rate"]}')
     test_results = test(model, test_loader, device, criterion)
 
     test_results = add_parameters_to_test_results(

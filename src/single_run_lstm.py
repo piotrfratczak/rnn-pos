@@ -5,7 +5,7 @@ import pathlib
 import torch.nn as nn
 
 from src.test import test
-from src.train import train
+from src.train import train, save_model
 from src.data_loading import load_data
 from src.utils import Selector, get_model, get_embedding_vectors, prepare_dataloaders, \
     add_parameters_to_test_results
@@ -32,8 +32,9 @@ def single_run_lstm(params, embeddings):
                           params['hidden_dim'], device, params['drop_prob'], tokenizer, params['sequence_length'])
         criterion, optimizer = nn.CrossEntropyLoss(), torch.optim.Adam(model.parameters(), lr=params['learning_rate'])
 
-        train_stats = \
-            train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
+        model, train_stats = train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
+        save_model(model, f'weights/{model_name}_{params["dataset"]}_seq:{params["sequence_length"]}'
+                          f'_emb:{params["embedding_size"]}_lr:{params["learning_rate"]}_pad:{params["padding"]}')
         test_results = test(model, test_loader, device, criterion)
 
         test_results = add_parameters_to_test_results(

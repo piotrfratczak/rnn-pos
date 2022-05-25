@@ -23,23 +23,25 @@ if __name__ == "__main__":
     # LSTM
     results = []
     embeddings = get_embeddings()
-    for idx, single_params in enumerate(product(*all_possible_params_lstm.values())):
-        logging.info(f"Progress for lstm = {idx + 1}/{len(list(product(*all_possible_params_lstm.values())))}")
+    for idx, single_params in enumerate(product(*all_possible_params_lstm.values()), 1):
+        logging.info(f"Progress for lstm = {idx}/{len(list(product(*all_possible_params_lstm.values())))}")
         single_params_dict = dict(zip(all_possible_params_lstm, single_params))
         run_results = single_run_lstm(single_params_dict, embeddings)
         results.extend(run_results)
+        save_results_to_csv(results, f'lstm_{idx}')
 
     save_results_to_csv(results, 'lstm')
 
     # Roberta
     results = []
-    for idx, single_params in enumerate(product(*all_possible_params_roberta.values())):
-        logging.info(f"Progress for roberta {idx + 1}/{len(list(product(*all_possible_params_roberta.values())))}")
+    for idx, single_params in enumerate(product(*all_possible_params_roberta.values()), 1):
+        logging.info(f"Progress for roberta {idx}/{len(list(product(*all_possible_params_roberta.values())))}")
         single_params_dict = dict(zip(all_possible_params_roberta, single_params))
         run_results = single_run_roberta(single_params_dict)
         results.extend(run_results)
+        save_results_to_csv(results, f'roberta_{idx}')
 
-    save_results_to_csv(results, "roberta")
+    save_results_to_csv(results, 'roberta')
 
     end = time.perf_counter()
-    print(f"Exec time: {end - start}")
+    print(f'Exec time: {end - start}')

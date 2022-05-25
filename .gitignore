@@ -144,3 +144,7 @@ data/glove/*
 # model
 weights/*
 !weights/.gitkeep
+
+# results
+results/*
+!results/.gitkeep

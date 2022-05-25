@@ -107,10 +107,9 @@ def text_preprocessing(params, X, y):
     X = tokenizer.texts_to_sequences(X)
     X = [row[:params['sequence_length']] for row in X]
 
-    X, y_one_hot = np.array(X, dtype=object), np.array(y_one_hot, dtype=object)
+    X, y_one_hot = np.array(X, dtype=object), np.array(y_one_hot, dtype=np.float32)
     X = pad_sequences(X, maxlen=params['sequence_length'], padding=params['padding'])
 
-    y_one_hot = np.asarray(y_one_hot, dtype=np.float32)
     return X, y_one_hot, tokenizer, output_size
 
 

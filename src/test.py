@@ -7,12 +7,6 @@ from src.utils import get_one_hot_label, exec_batch_roberta_model, exec_batch_ls
 
 
 def test(model, test_loader, device, criterion):
-    if repr(model) == "Roberta":
-        model.load_weights()
-    else:
-        with open('weights/model.pickle', 'rb') as f:
-            model = pickle.load(f)
-
     model.eval()
     test_lab_vec, test_pred_vec, test_losses = [], [], []
 
