@@ -19,6 +19,7 @@ def single_run_roberta(params):
     logging.info(
         f"Using parameters: epochs={params['epochs']},  learning_rate={params['learning_rate']}, "
         f"hidden_size={params['hidden_dim']}, sequence_length={params['sequence_length']}")
+    logging.info(f"Dataset: {params['dataset']}")
     X, y = load_data(data_root, params['dataset'])
     train_loader, val_loader, test_loader, _, output_size = prepare_dataloaders(X, y, params,
                                                                                 for_roberta=True)

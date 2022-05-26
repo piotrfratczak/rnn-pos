@@ -1,4 +1,7 @@
 {
+  "model": [
+    0, 1, 2, 3
+  ],
   "dataset": [
     "BBC_news",
     "SpamSMS",
