@@ -13,8 +13,7 @@ from torch.utils.data import TensorDataset, DataLoader, Dataset
 
 from src.encoder import Encoder
 from src.data_loading import load_glove
-from src.model.model import SpamClassifierLstmLayer, SpamClassifierSingleLstmCell, SpamClassifierLstmPosUniversal, \
-    SpamClassifierLstmPosPenn
+from src.model.model import ClassifierLstmLayer, ClassifierSingleLstmCell, ClassifierLstmUniversal, ClassifierLstmPenn
 
 
 class Selector(Enum):
@@ -57,18 +56,18 @@ class CustomRobertaDataset(Dataset):
 def get_model(selector, vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device, drop_prob,
               tokenizer, seq_len, n_layers=2):
     if selector == Selector.LSTM_Layer:
-        return SpamClassifierLstmLayer(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device,
-                                       drop_prob, n_layers, seq_len)
+        return ClassifierLstmLayer(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device,
+                                   drop_prob, n_layers, seq_len)
     elif selector == Selector.LSTM_Single_Cell:
-        return SpamClassifierSingleLstmCell(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
-                                            device, drop_prob, seq_len)
+        return ClassifierSingleLstmCell(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
+                                        device, drop_prob, seq_len)
     elif selector == Selector.LSTM_POS_Penn:
-        return SpamClassifierLstmPosPenn(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device,
-                                         drop_prob, IndexMapper(tokenizer), seq_len)
+        return ClassifierLstmPenn(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device,
+                                  drop_prob, IndexMapper(tokenizer), seq_len)
 
     elif selector == Selector.LSTM_POS_Universal:
-        return SpamClassifierLstmPosUniversal(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
-                                              device, drop_prob, IndexMapper(tokenizer), seq_len)
+        return ClassifierLstmUniversal(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
+                                       device, drop_prob, IndexMapper(tokenizer), seq_len)
     else:
         raise ValueError(f"Unknown selector value: {selector}")
 

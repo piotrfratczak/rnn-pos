@@ -3,11 +3,11 @@ from torch import nn as nn
 from abc import ABC, abstractmethod
 
 
-class AbstractSpamClassifier(nn.Module, ABC):
+class AbstractClassifier(nn.Module, ABC):
 
     def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device, drop_prob,
                  seq_len):
-        super(AbstractSpamClassifier, self).__init__()
+        super(AbstractClassifier, self).__init__()
         self.output_size = output_size
         self.hidden_dim = hidden_dim
         self.device = device
@@ -35,10 +35,11 @@ class AbstractSpamClassifier(nn.Module, ABC):
         return hidden
 
 
-class AbstractSpamClassifierWithTaggerIndexMapperAndDynamicGraph(AbstractSpamClassifier, ABC):
+# Abstract Classifier with a tagger, index mapper and dynamic graph
+class AbstractDynamicGraphClassifier(AbstractClassifier, ABC):
     def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
                  hidden_dim, device, drop_prob, index_mapper, seq_len):
-        super(AbstractSpamClassifierWithTaggerIndexMapperAndDynamicGraph, self).__init__(
+        super(AbstractDynamicGraphClassifier, self).__init__(
             vocab_size, output_size, embedding_matrix, embedding_size,
             hidden_dim, device, drop_prob, seq_len)
 

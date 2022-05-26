@@ -1,13 +1,13 @@
 import torch.nn as nn
 
 from src.tagger import FullTagger, UniversalTagger
-from src.model.abstract_model import AbstractSpamClassifier, AbstractSpamClassifierWithTaggerIndexMapperAndDynamicGraph
+from src.model.abstract_model import AbstractClassifier, AbstractDynamicGraphClassifier
 
 
-class SpamClassifierSingleLstmCell(AbstractSpamClassifier):
+class ClassifierSingleLstmCell(AbstractClassifier):
     def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
                  hidden_dim, device, drop_prob, seq_len):
-        super(SpamClassifierSingleLstmCell, self).__init__(
+        super(ClassifierSingleLstmCell, self).__init__(
             vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device, drop_prob, seq_len)
 
         self.lstm_cell = nn.LSTMCell(embedding_size, hidden_dim)
@@ -36,10 +36,10 @@ class SpamClassifierSingleLstmCell(AbstractSpamClassifier):
         return "SingleLSTMCell"
 
 
-class SpamClassifierLstmLayer(AbstractSpamClassifier):
+class ClassifierLstmLayer(AbstractClassifier):
     def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
                  hidden_dim, device, drop_prob, n_layers, seq_len):
-        super(SpamClassifierLstmLayer, self).__init__(
+        super(ClassifierLstmLayer, self).__init__(
             vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device, drop_prob, seq_len)
 
         self.n_layers = n_layers
@@ -70,12 +70,12 @@ class SpamClassifierLstmLayer(AbstractSpamClassifier):
         return "LSTMLayer"
 
 
-class SpamClassifierLstmPosPenn(AbstractSpamClassifierWithTaggerIndexMapperAndDynamicGraph):
+class ClassifierLstmPenn(AbstractDynamicGraphClassifier):
 
     def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
                  hidden_dim, device, drop_prob, index_mapper, seq_len):
-        super(SpamClassifierLstmPosPenn, self).__init__(vocab_size, output_size, embedding_matrix, embedding_size,
-                                                        hidden_dim, device, drop_prob, index_mapper, seq_len)
+        super(ClassifierLstmPenn, self).__init__(vocab_size, output_size, embedding_matrix, embedding_size,
+                                                 hidden_dim, device, drop_prob, index_mapper, seq_len)
 
         self.lstm_cell_vbn = nn.LSTMCell(embedding_size, hidden_dim)
         self.lstm_cell_vbz = nn.LSTMCell(embedding_size, hidden_dim)
@@ -161,11 +161,11 @@ class SpamClassifierLstmPosPenn(AbstractSpamClassifierWithTaggerIndexMapperAndDy
         return "PosPenn"
 
 
-class SpamClassifierLstmPosUniversal(AbstractSpamClassifierWithTaggerIndexMapperAndDynamicGraph):
+class ClassifierLstmUniversal(AbstractDynamicGraphClassifier):
 
     def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
                  hidden_dim, device, drop_prob, index_mapper, seq_len):
-        super(SpamClassifierLstmPosUniversal, self).__init__(
+        super(ClassifierLstmUniversal, self).__init__(
             vocab_size, output_size, embedding_matrix, embedding_size,
             hidden_dim, device, drop_prob, index_mapper, seq_len)
 
