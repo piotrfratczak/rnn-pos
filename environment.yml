@@ -36,7 +36,6 @@ dependencies:
   - google-pasta=0.2.0
   - grpc-cpp=1.37.1
   - grpcio=1.37.1
-  - h5py=2.10.0
   - hdf5=1.10.6
   - hydra-core=1.1.1
   - icu=68.2
@@ -67,7 +66,6 @@ dependencies:
   - ninja-base=1.10.2
   - nltk=3.7
   - numexpr=2.8.1
-  - numpy=1.22.3
   - numpy-base=1.22.3
   - oauthlib=3.2.0
   - omegaconf=2.1.1
@@ -118,7 +116,6 @@ dependencies:
   - tk=8.6.11
   - tqdm=4.64.0
   - typing=3.10.0.0
-  - typing-extensions=4.1.1
   - typing_extensions=4.1.1
   - urllib3=1.26.9
   - werkzeug=2.1.2
@@ -129,3 +126,13 @@ dependencies:
   - yarl=1.7.0
   - zipp=3.8.0
   - zlib=1.2.12
+  - pip:
+    - annoy==1.17.0
+    - fasteners==0.17.3
+    - h5py==3.7.0
+    - lz4==4.0.1
+    - numpy==1.22.4
+    - pymagnitude==0.1.143
+    - torch==1.11.0
+    - typing-extensions==4.2.0
+    - xxhash==3.0.0
