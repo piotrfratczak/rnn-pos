@@ -1,5 +1,8 @@
+import os
 import json
 import torch
+import pickle
+import pathlib
 import logging
 import numpy as np
 import pandas as pd
@@ -11,8 +14,8 @@ from sklearn.model_selection import train_test_split
 from keras.preprocessing.sequence import pad_sequences
 from torch.utils.data import TensorDataset, DataLoader, Dataset
 
-from src.encoder import Encoder
-from src.data_loading import load_glove
+from src.utils.encoder import Encoder
+from src.utils.data_loading import load_glove
 from src.model.model import ClassifierLstmLayer, ClassifierSingleLstmCell, ClassifierLstmUniversal, ClassifierLstmPenn, \
     ClassifierConcatPennLstm, ClassifierConcatUniversalLstm
 
@@ -184,7 +187,8 @@ def add_parameters_to_test_results(test_results, model_name, sequence_length,
 
 def save_results_to_csv(results: List[Dict], filename):
     current_date = datetime.now().strftime("%d.%m.%Y_%H:%M:%S")
-    filename = f"results/{filename}_{current_date}.csv"
+    results_root = os.path.join(pathlib.Path(__file__).parent.parent.parent, 'results')
+    filename = os.path.join(results_root, f"{filename}_{current_date}.csv")
 
     logging.info(f"Saving results in file: {filename}")
     df = pd.DataFrame(data=results)
@@ -208,3 +212,22 @@ def exec_batch_lstm_models(inputs, device, model):
     model.zero_grad()
     output, hidden = model(inputs, hidden)
     return output
+
+
+def save_model(model, filename='model.pickle'):
+    filepath = os.path.join(pathlib.Path(__file__).parent.parent.parent, 'weights', filename)
+    if repr(model) == "Roberta":
+        model.save_weights(filepath)
+    else:
+        with open(filepath, 'wb') as f:
+            pickle.dump(model, f)
+
+
+def load_model(model, filename='model.pickle'):
+    filepath = os.path.join(pathlib.Path(__file__).parent.parent.parent, 'weights', filename)
+    if repr(model) == "Roberta":
+        model.load_weights(filepath)
+    else:
+        with open(filepath, 'rb') as f:
+            model = pickle.load(f)
+    return model

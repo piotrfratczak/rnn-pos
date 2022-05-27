@@ -4,15 +4,15 @@ import logging
 import pathlib
 import torch.nn as nn
 
-from src.test import test
-from src.train import train, save_model
-from src.data_loading import load_data
-from src.utils import Selector, get_model, get_embedding_vectors, prepare_dataloaders, \
-    add_parameters_to_test_results
+from src.train.test import test
+from src.train.train import train
+from src.utils.data_loading import load_data
+from src.utils.utils import Selector, get_model, get_embedding_vectors, prepare_dataloaders, \
+    add_parameters_to_test_results, save_model
 
 
 def single_run_lstm(params, embeddings):
-    data_root = os.path.join(pathlib.Path(__file__).parent.parent, 'data')
+    data_root = os.path.join(pathlib.Path(__file__).parent.parent.parent, 'data')
     device = "cuda" if torch.cuda.is_available() else 'cpu'
     logging.info(f"Using device: {device}")
     logging.info(
@@ -34,7 +34,7 @@ def single_run_lstm(params, embeddings):
     criterion, optimizer = nn.CrossEntropyLoss(), torch.optim.Adam(model.parameters(), lr=params['learning_rate'])
 
     model, train_stats = train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
-    save_model(model, f'weights/{model_name}_{params["dataset"]}_seq:{params["sequence_length"]}'
+    save_model(model, f'{model_name}_{params["dataset"]}_seq:{params["sequence_length"]}'
                       f'_emb:{params["embedding_size"]}_lr:{params["learning_rate"]}_pad:{params["padding"]}')
     test_results = test(model, test_loader, device, criterion)
 

@@ -5,15 +5,15 @@ import pathlib
 import torch
 from torch import nn
 
-from src.data_loading import load_data
+from src.utils.data_loading import load_data
 from src.model.roberta import RobertaClassifier
-from src.test import test
-from src.train import train, save_model
-from src.utils import prepare_dataloaders, add_parameters_to_test_results
+from src.train.test import test
+from src.train.train import train
+from src.utils.utils import prepare_dataloaders, add_parameters_to_test_results, save_model
 
 
 def single_run_roberta(params):
-    data_root = os.path.join(pathlib.Path(__file__).parent.parent, 'data')
+    data_root = os.path.join(pathlib.Path(__file__).parent.parent.parent, 'data')
     device = "cuda" if torch.cuda.is_available() else 'cpu'
     logging.info(f"Using device: {device}")
     logging.info(
@@ -28,7 +28,7 @@ def single_run_roberta(params):
     criterion, optimizer = nn.CrossEntropyLoss(), torch.optim.Adam(model.parameters(), lr=params['learning_rate'])
     model, train_stats = train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
     save_model(model,
-               f'weights/Roberta_{params["dataset"]}_seq:{params["sequence_length"]}_lr:{params["learning_rate"]}')
+               f'Roberta_{params["dataset"]}_seq:{params["sequence_length"]}_lr:{params["learning_rate"]}')
     test_results = test(model, test_loader, device, criterion)
 
     test_results = add_parameters_to_test_results(

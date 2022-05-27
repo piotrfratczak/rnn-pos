@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from pymagnitude import FeaturizerMagnitude
 
-from src.tagger import FullTagger, UniversalTagger
+from src.utils.tagger import FullTagger, UniversalTagger
 from src.model.abstract_model import AbstractClassifier, AbstractDynamicGraphClassifier
 
 

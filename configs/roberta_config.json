@@ -1,8 +1,11 @@
 {
+  "run": "y",
   "dataset": [
     "BBC_news",
     "SpamSMS",
-    "DisasterTweets"
+    "DisasterTweets",
+    "IDMB_reviews",
+    "Emotions"
   ],
   "sequence_length": [
     50,

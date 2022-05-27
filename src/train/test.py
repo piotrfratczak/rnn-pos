@@ -1,9 +1,8 @@
-import pickle
 import logging
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 
-from src.utils import get_one_hot_label, exec_batch_roberta_model, exec_batch_lstm_models
+from src.utils.utils import get_one_hot_label, exec_batch_roberta_model, exec_batch_lstm_models
 
 
 def test(model, test_loader, device, criterion):

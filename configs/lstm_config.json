@@ -1,13 +1,5 @@
 {
-  "_comment" : [
-    "model options:",
-    "0 = LSTM_Layer",
-    "1 = LSTM_Single_Cell",
-    "2 = LSTM_POS_Penn",
-    "3 = LSTM_POS_Universal",
-    "4 = LSTM_Concat_Penn",
-    "5 = LSTM_Concat_Universal"
-  ],
+  "run": "y",
   "model": [
     0, 1, 2, 3, 4, 5
   ],

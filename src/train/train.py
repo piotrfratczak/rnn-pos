@@ -1,18 +1,9 @@
-import pickle
 import logging
 import numpy as np
 import torch.nn as nn
 from tqdm import tqdm
 
-from src.utils import exec_batch_roberta_model, exec_batch_lstm_models
-
-
-def save_model(model, filename='weights/model.pickle'):
-    if repr(model) == "Roberta":
-        model.save_weights(filename)
-    else:
-        with open(filename, 'wb') as f:
-            pickle.dump(model, f)
+from src.utils.utils import exec_batch_roberta_model, exec_batch_lstm_models
 
 
 def train(model, epochs, train_loader, val_loader, device, optimizer, criterion, clip=None):
