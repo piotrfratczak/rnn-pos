@@ -29,7 +29,8 @@ if __name__ == "__main__":
             single_params_dict = dict(zip(all_possible_params_lstm, single_params))
             run_results = single_run_lstm(single_params_dict, embeddings)
             results.extend(run_results)
-            save_results_to_csv(results, f'lstm_{idx}')
+            if single_params_dict['mode'] != 'debug':
+                save_results_to_csv(results, f'lstm_{idx}')
 
         save_results_to_csv(results, 'lstm')
 
@@ -41,7 +42,8 @@ if __name__ == "__main__":
             single_params_dict = dict(zip(all_possible_params_roberta, single_params))
             run_results = single_run_roberta(single_params_dict)
             results.extend(run_results)
-            save_results_to_csv(results, f'roberta_{idx}')
+            if single_params_dict['mode'] != 'debug':
+                save_results_to_csv(results, f'roberta_{idx}')
 
         save_results_to_csv(results, 'roberta')
 

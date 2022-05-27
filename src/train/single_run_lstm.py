@@ -34,8 +34,9 @@ def single_run_lstm(params, embeddings):
     criterion, optimizer = nn.CrossEntropyLoss(), torch.optim.Adam(model.parameters(), lr=params['learning_rate'])
 
     model, train_stats = train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
-    save_model(model, f'{model_name}_{params["dataset"]}_seq:{params["sequence_length"]}'
-                      f'_emb:{params["embedding_size"]}_lr:{params["learning_rate"]}_pad:{params["padding"]}')
+    if params['mode'] != 'debug':
+        save_model(model, f'{model_name}_{params["dataset"]}_seq:{params["sequence_length"]}'
+                          f'_emb:{params["embedding_size"]}_lr:{params["learning_rate"]}_pad:{params["padding"]}')
     test_results = test(model, test_loader, device, criterion)
 
     test_results = add_parameters_to_test_results(

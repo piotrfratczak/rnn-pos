@@ -27,8 +27,8 @@ def single_run_roberta(params):
     model = RobertaClassifier(output_size, params['hidden_dim'])
     criterion, optimizer = nn.CrossEntropyLoss(), torch.optim.Adam(model.parameters(), lr=params['learning_rate'])
     model, train_stats = train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
-    save_model(model,
-               f'Roberta_{params["dataset"]}_seq:{params["sequence_length"]}_lr:{params["learning_rate"]}')
+    if params['mode'] != 'debug':
+        save_model(model, f'Roberta_{params["dataset"]}_seq:{params["sequence_length"]}_lr:{params["learning_rate"]}')
     test_results = test(model, test_loader, device, criterion)
 
     test_results = add_parameters_to_test_results(
