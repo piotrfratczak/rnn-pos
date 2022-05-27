@@ -13,7 +13,8 @@ from torch.utils.data import TensorDataset, DataLoader, Dataset
 
 from src.encoder import Encoder
 from src.data_loading import load_glove
-from src.model.model import ClassifierLstmLayer, ClassifierSingleLstmCell, ClassifierLstmUniversal, ClassifierLstmPenn
+from src.model.model import ClassifierLstmLayer, ClassifierSingleLstmCell, ClassifierLstmUniversal, ClassifierLstmPenn, \
+    ClassifierConcatPennLstm, ClassifierConcatUniversalLstm
 
 
 class Selector(Enum):
@@ -21,6 +22,8 @@ class Selector(Enum):
     LSTM_Single_Cell = 1
     LSTM_POS_Penn = 2
     LSTM_POS_Universal = 3
+    LSTM_Concat_Penn = 4
+    LSTM_Concat_Universal = 5
 
 
 class IndexMapper:
@@ -64,10 +67,15 @@ def get_model(selector, vocab_size, output_size, embedding_matrix, embedding_siz
     elif selector == Selector.LSTM_POS_Penn:
         return ClassifierLstmPenn(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device,
                                   drop_prob, IndexMapper(tokenizer), seq_len)
-
     elif selector == Selector.LSTM_POS_Universal:
         return ClassifierLstmUniversal(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
                                        device, drop_prob, IndexMapper(tokenizer), seq_len)
+    elif selector == Selector.LSTM_Concat_Penn:
+        return ClassifierConcatPennLstm(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
+                                        device, drop_prob, n_layers, IndexMapper(tokenizer), seq_len)
+    elif selector == Selector.LSTM_Concat_Universal:
+        return ClassifierConcatUniversalLstm(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
+                                             device, drop_prob, n_layers, IndexMapper(tokenizer), seq_len)
     else:
         raise ValueError(f"Unknown selector value: {selector}")
 

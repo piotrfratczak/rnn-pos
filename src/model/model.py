@@ -1,4 +1,6 @@
+import torch
 import torch.nn as nn
+from pymagnitude import FeaturizerMagnitude
 
 from src.tagger import FullTagger, UniversalTagger
 from src.model.abstract_model import AbstractClassifier, AbstractDynamicGraphClassifier
@@ -68,6 +70,59 @@ class ClassifierLstmLayer(AbstractClassifier):
 
     def __repr__(self):
         return "LSTMLayer"
+
+
+class ClassifierConcatPennLstm(ClassifierLstmLayer):
+    def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
+                 hidden_dim, device, drop_prob, n_layers, index_mapper, seq_len):
+        super(ClassifierConcatPennLstm, self).__init__(
+            vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device, drop_prob, n_layers, seq_len)
+
+        self.lstm = nn.LSTM(embedding_size+4, hidden_dim, n_layers, dropout=drop_prob, batch_first=True)
+        self.index_mapper = index_mapper
+        self.tagger = FullTagger()
+
+    def forward(self, x, hidden):
+        batch_size = x.size(0)
+        x = x.long()
+
+        tags = []
+        for batch in range(batch_size):
+            indices_list = x.tolist()[batch]
+            list_of_words = self.index_mapper.indices_to_words(indices_list)
+            list_of_tags = self.tagger.map_sentence(list_of_words)
+            tags.append(list_of_tags)
+        pos_vectors = FeaturizerMagnitude(100, namespace='PartsOfSpeech').query(tags)
+
+        embeds = self.embedding(x)
+        lstm_input = torch.cat([embeds, torch.tensor(pos_vectors)], dim=2)
+
+        lstm_out, hidden = self.lstm(lstm_input, hidden)
+        lstm_out = lstm_out.contiguous().view(-1, self.hidden_dim)
+
+        out = self.dropout(lstm_out)
+        out = self.fc(out)
+        out = self.sigmoid(out)
+
+        out = out.view(batch_size, -1)
+        out = out[:, -self.output_size:]
+        return out, hidden
+
+    def __repr__(self):
+        return "LSTMConcatPenn"
+
+
+class ClassifierConcatUniversalLstm(ClassifierConcatPennLstm):
+    def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
+                 hidden_dim, device, drop_prob, n_layers, index_mapper, seq_len):
+        super(ClassifierConcatUniversalLstm, self).__init__(
+            vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device, drop_prob, n_layers,
+            index_mapper, seq_len)
+
+        self.tagger = UniversalTagger()
+
+    def __repr__(self):
+        return "LSTMConcatUniversal"
 
 
 class ClassifierLstmPenn(AbstractDynamicGraphClassifier):
