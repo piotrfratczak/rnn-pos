@@ -17,7 +17,7 @@ from torch.utils.data import TensorDataset, DataLoader, Dataset
 from src.utils.encoder import Encoder
 from src.utils.data_loading import load_glove
 from src.model.model import ClassifierLstmLayer, ClassifierSingleLstmCell, ClassifierLstmUniversal, ClassifierLstmPenn, \
-    ClassifierConcatPennLstm, ClassifierConcatUniversalLstm
+    ClassifierConcatPennLstm, ClassifierConcatUniversalLstm, ClassifierConcatDependencyLstm
 
 
 class Selector(Enum):
@@ -27,6 +27,7 @@ class Selector(Enum):
     LSTM_POS_Universal = 3
     LSTM_Concat_Penn = 4
     LSTM_Concat_Universal = 5
+    LSTM_Concat_Dependency = 6
 
 
 class IndexMapper:
@@ -60,7 +61,7 @@ class CustomRobertaDataset(Dataset):
 
 
 def get_model(selector, vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device, drop_prob,
-              tokenizer, seq_len, n_layers=2):
+              tokenizer, seq_len, n_layers):
     if selector == Selector.LSTM_Layer:
         return ClassifierLstmLayer(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device,
                                    drop_prob, n_layers, seq_len)
@@ -79,6 +80,9 @@ def get_model(selector, vocab_size, output_size, embedding_matrix, embedding_siz
     elif selector == Selector.LSTM_Concat_Universal:
         return ClassifierConcatUniversalLstm(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
                                              device, drop_prob, n_layers, IndexMapper(tokenizer), seq_len)
+    elif selector == Selector.LSTM_Concat_Dependency:
+        return ClassifierConcatDependencyLstm(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
+                                              device, drop_prob, n_layers, seq_len)
     else:
         raise ValueError(f"Unknown selector value: {selector}")
 
@@ -173,7 +177,7 @@ def get_one_hot_label(nn_output: List[float]):
 
 
 def add_parameters_to_test_results(test_results, model_name, sequence_length,
-                                   embedding_size, epochs, learning_rate, padding, dataset):
+                                   embedding_size, epochs, learning_rate, padding, dataset, n_layers):
     test_results["model"] = model_name
     test_results["sequence_length"] = sequence_length
     test_results["embedding_size"] = embedding_size
@@ -181,6 +185,7 @@ def add_parameters_to_test_results(test_results, model_name, sequence_length,
     test_results["learning_rate"] = learning_rate
     test_results["padding"] = padding
     test_results["dataset"] = dataset
+    test_results["lstm_layers"] = n_layers
 
     return test_results
 

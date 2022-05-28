@@ -30,7 +30,8 @@ def single_run_lstm(params, embeddings):
     logging.info(f"Model name: {model_name}")
 
     model = get_model(Selector(model_idx), vocab_size, output_size, embedding_matrix, params['embedding_size'],
-                      params['hidden_dim'], device, params['drop_prob'], tokenizer, params['sequence_length'])
+                      params['hidden_dim'], device, params['drop_prob'], tokenizer, params['sequence_length'],
+                      params['lstm_layers'])
     criterion, optimizer = nn.CrossEntropyLoss(), torch.optim.Adam(model.parameters(), lr=params['learning_rate'])
 
     model, train_stats = train(model, params['epochs'], train_loader, val_loader, device, optimizer, criterion)
@@ -41,7 +42,8 @@ def single_run_lstm(params, embeddings):
 
     test_results = add_parameters_to_test_results(
         test_results, model_name, params['sequence_length'], params['embedding_size'],
-        train_stats['epoch_min_loss'], params['learning_rate'], params['padding'], params['dataset']
+        train_stats['epoch_min_loss'], params['learning_rate'], params['padding'],
+        params['dataset'], params['lstm_layers']
     )
 
     run_results.append(test_results)

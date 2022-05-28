@@ -1,5 +1,6 @@
 import json
 import time
+import stanza
 import logging
 from itertools import product
 
@@ -22,6 +23,8 @@ if __name__ == "__main__":
     # LSTM
     if all_possible_params_lstm['run'] in ['y', 'Y', '1']:
         download_nltk_packages()
+        if 6 in all_possible_params_lstm['model']:
+            stanza.download('en', model_dir='data/stanza')
         results = []
         embeddings = get_embeddings()
         for idx, single_params in enumerate(product(*all_possible_params_lstm.values()), 1):

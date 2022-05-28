@@ -1,7 +1,7 @@
 {
   "run": "y",
   "model": [
-    0, 1, 2, 3, 4, 5
+    0, 1, 2, 3, 4, 5, 6
   ],
   "dataset": [
     "BBC_news",
@@ -15,6 +15,7 @@
     200
   ],
   "embedding_size": [
+    50,
     100
   ],
   "learning_rate": [
@@ -52,5 +53,8 @@
   ],
   "padding": [
     "pre"
+  ],
+  "lstm_layers": [
+    32
   ]
 }

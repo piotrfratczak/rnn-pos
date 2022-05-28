@@ -1,4 +1,7 @@
+import os
 import torch
+import stanza
+import pathlib
 import torch.nn as nn
 from pymagnitude import FeaturizerMagnitude
 
@@ -78,7 +81,8 @@ class ClassifierConcatPennLstm(ClassifierLstmLayer):
         super(ClassifierConcatPennLstm, self).__init__(
             vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim, device, drop_prob, n_layers, seq_len)
 
-        self.lstm = nn.LSTM(embedding_size+4, hidden_dim, n_layers, dropout=drop_prob, batch_first=True)
+        pos_vector_dim = FeaturizerMagnitude(100, namespace='PartsOfSpeech').dim
+        self.lstm = nn.LSTM(embedding_size + pos_vector_dim, hidden_dim, n_layers, dropout=drop_prob, batch_first=True)
         self.index_mapper = index_mapper
         self.tagger = FullTagger()
 
@@ -110,6 +114,64 @@ class ClassifierConcatPennLstm(ClassifierLstmLayer):
 
     def __repr__(self):
         return "LSTMConcatPenn"
+
+
+class ClassifierConcatDependencyLstm(ClassifierLstmLayer):
+    def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
+                 hidden_dim, device, drop_prob, n_layers, seq_len):
+        super(ClassifierConcatDependencyLstm, self).__init__(
+                vocab_size, output_size, embedding_matrix, embedding_size,
+                hidden_dim, device, drop_prob, n_layers, seq_len)
+
+        add_vector_dim = FeaturizerMagnitude(100, namespace='PartsOfSpeech').dim +\
+            FeaturizerMagnitude(100, namespace='SyntaxDependencies').dim
+        self.lstm = nn.LSTM(embedding_size + add_vector_dim, hidden_dim, n_layers, dropout=drop_prob, batch_first=True)
+        stanza_dir = os.path.join(pathlib.Path(__file__).parent.parent.parent, 'data/stanza')
+        self.parser = stanza.Pipeline('en', processors='tokenize,mwt,pos,lemma,depparse', use_gpu=True, dir=stanza_dir)
+
+    def forward(self, x, hidden):
+        batch_size = x.size(0)
+        x = x.long()
+
+        documents = []
+        for batch in range(batch_size):
+            indices_list = x.tolist()[batch]
+            list_of_words = self.index_mapper.indices_to_words(indices_list)
+            sentence = ' '.join(list_of_words)
+            doc = stanza.Document([], text=sentence)
+            documents.append(doc)
+        out_docs = self.parser(documents)
+
+        batch_tags = []
+        batch_deps = []
+        for doc in out_docs:
+            tags = []
+            deps = []
+            for sent in doc.sentences:
+                for word in sent.words:
+                    tags.append(word.xpos)
+                    deps.append(word.deprel)
+            batch_tags.append(tags[:self.seq_len])
+            batch_deps.append(deps[:self.seq_len])
+        pos_vectors = FeaturizerMagnitude(100, namespace='PartsOfSpeech').query(batch_tags)[:, :self.seq_len, :]
+        deps_vectors = FeaturizerMagnitude(100, namespace='SyntaxDependencies').query(batch_deps)[:, :self.seq_len, :]
+
+        embeds = self.embedding(x)
+        lstm_input = torch.cat([embeds, torch.tensor(pos_vectors), torch.tensor(deps_vectors)], dim=2)
+
+        lstm_out, hidden = self.lstm(lstm_input, hidden)
+        lstm_out = lstm_out.contiguous().view(-1, self.hidden_dim)
+
+        out = self.dropout(lstm_out)
+        out = self.fc(out)
+        out = self.sigmoid(out)
+
+        out = out.view(batch_size, -1)
+        out = out[:, -self.output_size:]
+        return out, hidden
+
+    def __repr__(self):
+        return "LSTMConcatDependency"
 
 
 class ClassifierConcatUniversalLstm(ClassifierConcatPennLstm):

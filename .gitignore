@@ -148,3 +148,6 @@ weights/*
 # results
 results/*
 !results/.gitkeep
+
+# Stanza
+data/stanza/*
