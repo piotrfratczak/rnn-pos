@@ -95,7 +95,7 @@ class ClassifierConcatPennLstm(ClassifierLstmLayer):
         pos_vectors = FeaturizerMagnitude(100, namespace='PartsOfSpeech').query(tags)
 
         embeds = self.embedding(x)
-        lstm_input = torch.cat([embeds, torch.tensor(pos_vectors)], dim=2)
+        lstm_input = torch.cat([embeds, torch.tensor(pos_vectors).to(self.device)], dim=2)
 
         lstm_out, hidden = self.lstm(lstm_input, hidden)
         lstm_out = lstm_out.contiguous().view(-1, self.hidden_dim)
