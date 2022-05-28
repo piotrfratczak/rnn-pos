@@ -14,23 +14,8 @@ logging.basicConfig(format='%(levelname)s - %(asctime)s - %(message)s', level=lo
 
 if __name__ == "__main__":
     start = time.perf_counter()
-    download_nltk_packages()
-
-    with open('configs/lstm_config.json', 'r') as lstm_fp, open('configs/roberta_config.json', 'r') as roberta_fp:
-        all_possible_params_lstm = json.load(lstm_fp)
+    with open('configs/roberta_config.json', 'r') as roberta_fp:
         all_possible_params_roberta = json.load(roberta_fp)
-
-    # LSTM
-    results = []
-    embeddings = get_embeddings()
-    for idx, single_params in enumerate(product(*all_possible_params_lstm.values()), 1):
-        logging.info(f"Progress for lstm = {idx}/{len(list(product(*all_possible_params_lstm.values())))}")
-        single_params_dict = dict(zip(all_possible_params_lstm, single_params))
-        run_results = single_run_lstm(single_params_dict, embeddings)
-        results.extend(run_results)
-        save_results_to_csv(results, f'lstm_{idx}')
-
-    save_results_to_csv(results, 'lstm')
 
     # Roberta
     results = []

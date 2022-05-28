@@ -1,8 +1,7 @@
 {
   "dataset": [
-    "BBC_news",
-    "SpamSMS",
-    "DisasterTweets"
+    "IMDB_reviews",
+    "Emotions"
   ],
   "sequence_length": [
     50,
