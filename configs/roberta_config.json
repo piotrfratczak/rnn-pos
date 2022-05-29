@@ -4,7 +4,7 @@
     "BBC_news",
     "SpamSMS",
     "DisasterTweets",
-    "IDMB_reviews",
+    "IMDB_reviews",
     "Emotions"
   ],
   "sequence_length": [
