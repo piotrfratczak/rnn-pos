@@ -118,11 +118,12 @@ class ClassifierConcatPennLstm(ClassifierLstmLayer):
 
 class ClassifierConcatDependencyLstm(ClassifierLstmLayer):
     def __init__(self, vocab_size, output_size, embedding_matrix, embedding_size,
-                 hidden_dim, device, drop_prob, n_layers, seq_len):
+                 hidden_dim, device, drop_prob, n_layers, index_mapper, seq_len):
         super(ClassifierConcatDependencyLstm, self).__init__(
                 vocab_size, output_size, embedding_matrix, embedding_size,
                 hidden_dim, device, drop_prob, n_layers, seq_len)
 
+        self.index_mapper = index_mapper
         add_vector_dim = FeaturizerMagnitude(100, namespace='PartsOfSpeech').dim +\
             FeaturizerMagnitude(100, namespace='SyntaxDependencies').dim
         self.lstm = nn.LSTM(embedding_size + add_vector_dim, hidden_dim, n_layers, dropout=drop_prob, batch_first=True)

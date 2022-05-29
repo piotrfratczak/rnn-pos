@@ -82,7 +82,7 @@ def get_model(selector, vocab_size, output_size, embedding_matrix, embedding_siz
                                              device, drop_prob, n_layers, IndexMapper(tokenizer), seq_len)
     elif selector == Selector.LSTM_Concat_Dependency:
         return ClassifierConcatDependencyLstm(vocab_size, output_size, embedding_matrix, embedding_size, hidden_dim,
-                                              device, drop_prob, n_layers, seq_len)
+                                              device, drop_prob, n_layers, IndexMapper(tokenizer), seq_len)
     else:
         raise ValueError(f"Unknown selector value: {selector}")
 
