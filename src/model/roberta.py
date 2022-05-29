@@ -43,11 +43,11 @@ class RobertaClassifier(nn.Module):
     def init_hidden(self, batch_size):
         pass
 
-    def save_weights(self, filepath):
+    def save_model(self, filepath):
         with open(filepath, 'wb') as f:
             pickle.dump(self.roberta.model.model, f)
 
-    def load_weights(self, filepath):
+    def load_model(self, filepath):
         with open(filepath, 'rb') as f:
             self.roberta.model.model = pickle.load(f)
 

@@ -1,7 +1,6 @@
 import os
 import json
 import torch
-import pickle
 import pathlib
 import logging
 import numpy as np
@@ -219,20 +218,13 @@ def exec_batch_lstm_models(inputs, device, model):
     return output
 
 
-def save_model(model, filename='model.pickle'):
+def save_model(model, filename='model.weights'):
     filepath = os.path.join(pathlib.Path(__file__).parent.parent.parent, 'weights', filename)
-    if repr(model) == "Roberta":
-        model.save_weights(filepath)
-    else:
-        with open(filepath, 'wb') as f:
-            pickle.dump(model, f)
+    model.save_model(filepath)
 
 
-def load_model(model, filename='model.pickle'):
+def load_model(model, filename='model.weights'):
     filepath = os.path.join(pathlib.Path(__file__).parent.parent.parent, 'weights', filename)
-    if repr(model) == "Roberta":
-        model.load_weights(filepath)
-    else:
-        with open(filepath, 'rb') as f:
-            model = pickle.load(f)
+    model.load_model(filepath)
     return model
+

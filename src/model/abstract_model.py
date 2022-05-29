@@ -34,6 +34,11 @@ class AbstractClassifier(nn.Module, ABC):
                   weight.new(batch_size, self.hidden_dim).zero_().to(self.device))
         return hidden
 
+    def save_model(self, filepath):
+        torch.save(self.state_dict(), filepath)
+
+    def load_model(self, filepath):
+        self.load_state_dict(torch.load(filepath))
 
 # Abstract Classifier with a tagger, index mapper and dynamic graph
 class AbstractDynamicGraphClassifier(AbstractClassifier, ABC):
