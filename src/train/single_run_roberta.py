@@ -33,7 +33,7 @@ def single_run_roberta(params):
 
     test_results = add_parameters_to_test_results(
         test_results, 'Roberta Classifier', params['sequence_length'], None, train_stats['epoch_min_loss'],
-        params['learning_rate'], None, params['dataset']
+        params['learning_rate'], None, params['dataset'], None
     )
 
     return [test_results]
