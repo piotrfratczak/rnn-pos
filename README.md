@@ -21,7 +21,7 @@ python3 main.py
 
 ## Side note
 Should work on Linux and MacOS.  
-Windows is not recomended.
+Windows is not recommended.
 
 ## Notebook
 Alternatively, you can run the project in a Google Colab notebook with [this script](notebook/rnn-pos.ipynb).
