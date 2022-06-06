@@ -6,6 +6,7 @@ Experiments with different RNN architectures based on LSTM - basic LSTM / LSTM w
 1. Create conda environment:
 ```
 conda env create -f environment.yml
+conda activate rnn-pos
 ```
 2. Install GloVe dataset from: https://nlp.stanford.edu/data/glove.6B.zip, extract it and place it into data/glove/ directory.
 
